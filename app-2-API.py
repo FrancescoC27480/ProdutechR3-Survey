@@ -67,10 +67,7 @@ def get_credentials():
         creds = Credentials.from_service_account_info(
             st.secrets["gcp_service_account"], scopes=SCOPES
         )
-    else:
-        creds = Credentials.from_service_account_file(
-            "/Users/francescocalzati/Desktop/Master_thesis/code/produtech-survey-JSON-key/produtech.json", scopes=SCOPES
-        )
+    
     return creds
 
 
