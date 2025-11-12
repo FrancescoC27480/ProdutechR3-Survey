@@ -63,14 +63,11 @@ DETAIL_COLUMNS = [
     "resposta",
 ]
 def get_credentials():
-    if "gcp_service_account" in st.secrets:
-        creds = Credentials.from_service_account_info(
-            st.secrets["gcp_service_account"], scopes=SCOPES
-        )
-    
+    creds = Credentials.from_service_account_info(
+        st.secrets["gcp_service_account"], scopes=SCOPES
+    )
     return creds
-
-
+    
 @st.cache_resource
 def get_gspread_client():
     creds = get_credentials()
