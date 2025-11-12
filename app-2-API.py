@@ -267,12 +267,13 @@ def save_survey_data_improved(company, responses, pps_data):
         "ia5": "IA-5. Em que medida o componente de IA está integrado com outros sistemas?",
         
         # RA/RV
-        "ra1": "RA-1. Como é que RA/RV está presente no produto que está a desenvolver ou testar?",
-        "ra1_out": "RA-1. Especificar outro",
-        "ra2": "RA-2. Que tipo de tecnologia de RA ou RV está integrada?",
-        "ra3": "RA-3. Em que fase de desenvolvimento ou teste está o componente RA/RV?",
-        "ra4": "RA-4. Como é que os utilizadores interagem com o componente RA/RV?",
-        "ra5": "RA-5. Em que medida o componente RA/RV está integrado com outros sistemas?",
+        "rav1": "RAV-1. Como é que RA/RV está presente no produto que está a desenvolver ou testar?",
+        "rav1_out": "RAV-1. Especificar outro", 
+        "rav2": "RAV-2. Que tipo de tecnologia de RA ou RV está integrada?",
+        "rav3": "RAV-3. Em que fase de desenvolvimento ou teste está o componente RA/RV?",
+        "rav4": "RAV-4. Como é que os utilizadores interagem com o componente RA/RV?",
+        "rav5": "RAV-5. Em que medida o componente RA/RV está integrado com outros sistemas?",
+        "rav5_out": "RAV-5. Especificar outro",
         
         # Micro/Nanoeletrónica e Fotónica
         "mnf1": "MNF-1. De que forma componentes micro-, nanoeletrónicos ou fotónicos estão presentes no produto?",
