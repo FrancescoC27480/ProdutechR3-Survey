@@ -13,36 +13,23 @@ import json
 from datetime import datetime
 import os
 
-#mobile interface optimization 
+# Add this right after your imports, replacing any other CSS
 st.markdown("""
 <style>
-    /* Mobile optimization */
-    .stSelectbox > div > div > div {
-        font-size: 16px !important;
-        min-height: 44px !important;
+/* Mobile debugging */
+@media (max-width: 768px) {
+    .stContainer, .element-container {
+        overflow: visible !important;
+        width: 100% !important;
     }
     
-    .stMultiSelect > div > div > div {
-        font-size: 16px !important;
-        min-height: 44px !important;
+    /* Force all form elements to be visible */
+    .stSelectbox, .stRadio, .stText {
+        display: block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
     }
-    
-    /* Improve touch targets for mobile */
-    .stSelectbox, .stMultiSelect {
-        margin-bottom: 20px !important;
-    }
-    
-    @media (max-width: 768px) {
-        .stSelectbox > div > div > div {
-            font-size: 18px !important;
-            min-height: 50px !important;
-        }
-        
-        .stMultiSelect > div > div > div {
-            font-size: 18px !important;
-            min-height: 50px !important;
-        }
-    }
+}
 </style>
 """, unsafe_allow_html=True)
 # ======================
