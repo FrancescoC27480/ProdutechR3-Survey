@@ -12,6 +12,39 @@ import json
 
 from datetime import datetime
 import os
+
+#mobile interface optimization 
+st.markdown("""
+<style>
+    /* Mobile optimization */
+    .stSelectbox > div > div > div {
+        font-size: 16px !important;
+        min-height: 44px !important;
+    }
+    
+    .stMultiSelect > div > div > div {
+        font-size: 16px !important;
+        min-height: 44px !important;
+    }
+    
+    /* Improve touch targets for mobile */
+    .stSelectbox, .stMultiSelect {
+        margin-bottom: 20px !important;
+    }
+    
+    @media (max-width: 768px) {
+        .stSelectbox > div > div > div {
+            font-size: 18px !important;
+            min-height: 50px !important;
+        }
+        
+        .stMultiSelect > div > div > div {
+            font-size: 18px !important;
+            min-height: 50px !important;
+        }
+    }
+</style>
+""", unsafe_allow_html=True)
 # ======================
 # GOOGLE SHEETS SETTINGS
 # ======================
