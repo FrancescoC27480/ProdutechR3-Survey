@@ -1980,7 +1980,7 @@ def render_tech_details():
     
     st.title(f"Produto {idx + 1} de {st.session_state.n_products}")
     st.header("Perguntas Detalhadas sobre as Tecnologias")
-     st.markdown(f"""
+    st.markdown(f"""
     <div style="background-color: #e3f2fd; padding: 15px; border-radius: 8px; border-left: 5px solid #2196F3; margin-bottom: 20px;">
         <p style="margin: 5px 0;"><strong>Work Package:</strong> {data.get('work_project', 'N/A')}</p>
         <p style="margin: 5px 0;"><strong>PPS:</strong> {pps_info.get('pps_num', 'N/A')}</p>
