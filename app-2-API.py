@@ -1978,8 +1978,13 @@ def render_tech_details():
     idx = st.session_state.current_product_index
     data = st.session_state.responses[idx]
     
+    # Get PPS info
+    pps_info = data.get('pps_info', {})
+    
     st.title(f"Produto {idx + 1} de {st.session_state.n_products}")
     st.header("Perguntas Detalhadas sobre as Tecnologias")
+    
+    # Display in an info box like in section 2
     st.markdown(f"""
     <div style="background-color: #e3f2fd; padding: 15px; border-radius: 8px; border-left: 5px solid #2196F3; margin-bottom: 20px;">
         <p style="margin: 5px 0;"><strong>Work Package:</strong> {data.get('work_project', 'N/A')}</p>
