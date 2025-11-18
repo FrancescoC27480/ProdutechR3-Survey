@@ -624,8 +624,16 @@ def render_section_1():
     st.title("Questionário Produtech R3")
     st.header("SECÇÃO I – Identificação e Classificação")
     st.write("Esta secção recolhe informações básicas para classificar as respostas por área, tipo de organização e região.")
+
+     # 1. Tipo de Organização
+    tipo_org = st.radio("2. Tipo de Organização (selecione todas as opções aplicáveis)", [
+        "Empresa privada – Desenvolvedora (desenvolvimento ativo de novo produto, serviço ou processo)",
+        "Empresa privada – Utilizadora (testa, adota ou aplica tecnologias desenvolvidas)",
+        "Organização de Investigação e Tecnologia (OIT), Associação ou Universidade"
+    ], key="tipo_org")
     
-    # 1. Número de Trabalhadores
+    
+    # 2. Número de Trabalhadores
     num_trab = st.radio("1. Número de Trabalhadores", [
         "Menos de 10 (microempresa)",
         "10–49 (pequena empresa)",
@@ -633,12 +641,6 @@ def render_section_1():
         "250 ou mais (grande empresa)"
     ], key="num_trab")
     
-    # 2. Tipo de Organização
-    tipo_org = st.radio("2. Tipo de Organização (selecione todas as opções aplicáveis)", [
-        "Empresa privada – Desenvolvedora (desenvolvimento ativo de novo produto, serviço ou processo)",
-        "Empresa privada – Utilizadora (testa, adota ou aplica tecnologias desenvolvidas)",
-        "Organização de Investigação e Tecnologia (OIT), Associação ou Universidade"
-    ], key="tipo_org")
     
     # 3. Região Principal de Operação
     regiao = st.radio("3. Região Principal de Operação (NUTS II)",
