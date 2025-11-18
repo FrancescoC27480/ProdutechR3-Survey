@@ -625,22 +625,25 @@ def render_section_1():
     st.header("SECÇÃO I – Identificação e Classificação")
     st.write("Esta secção recolhe informações básicas para classificar as respostas por área, tipo de organização e região.")
 
-     # 1. Tipo de Organização
-    tipo_org = st.radio("2. Tipo de Organização (selecione todas as opções aplicáveis)", [
+    # 1. Tipo de Organização (moved to top)
+    tipo_org = st.radio("1. Tipo de Organização (selecione todas as opções aplicáveis)", [
         "Empresa privada – Desenvolvedora (desenvolvimento ativo de novo produto, serviço ou processo)",
         "Empresa privada – Utilizadora (testa, adota ou aplica tecnologias desenvolvidas)",
         "Organização de Investigação e Tecnologia (OIT), Associação ou Universidade"
     ], key="tipo_org")
     
-    
-    # 2. Número de Trabalhadores
-    num_trab = st.radio("1. Número de Trabalhadores", [
-        "Menos de 10 (microempresa)",
-        "10–49 (pequena empresa)",
-        "50–249 (média empresa)",
-        "250 ou mais (grande empresa)"
-    ], key="num_trab")
-    
+    # 2. Número de Trabalhadores (conditional - only for companies)
+    num_trab = None
+    if tipo_org and "Organização de Investigação e Tecnologia (OIT), Associação ou Universidade" not in tipo_org:
+        num_trab = st.radio("2. Número de Trabalhadores", [
+            "Menos de 10 (microempresa)",
+            "10–49 (pequena empresa)",
+            "50–249 (média empresa)",
+            "250 ou mais (grande empresa)"
+        ], key="num_trab")
+    else:
+        # For universities/research organizations, set a default value or "N/A"
+        num_trab = "N/A - Organização de Investigação"
     
     # 3. Região Principal de Operação
     regiao = st.radio("3. Região Principal de Operação (NUTS II)",
@@ -745,7 +748,7 @@ Depois de **confirmar e adicionar um PPS à lista**, as barras de seleção mant
         st.warning("⚠️ Por favor, adicione pelo menos um PPS antes de continuar.")
     
     if st.button("Próximo ➡️", key="next_sec1", disabled=(len(st.session_state.selected_pps) == 0)):
-        if num_trab and tipo_org and regiao:
+        if tipo_org and regiao:  # num_trab is now optional
             st.session_state.company = {
                 "num_trabalhadores": num_trab,
                 "tipo_organizacao": tipo_org,
@@ -760,8 +763,6 @@ Depois de **confirmar e adicionar um PPS à lista**, as barras de seleção mant
             st.rerun()
         else:
             st.error("❌ Por favor, preencha todos os campos obrigatórios.")
-
-
 # SECTION II - Product intro
 def render_section_2_intro():
     idx = st.session_state.current_product_index
