@@ -787,12 +787,12 @@ Depois de **confirmar e adicionar um PPS à lista**, as barras de seleção mant
              "regiao": regiao,
              "selected_pps": st.session_state.selected_pps,
              "num_pps": num_pps
-           }
-           st.session_state.n_products = num_pps
-           st.session_state.responses = [{} for _ in range(num_pps)]
-           st.session_state.step = 1
-           st.session_state.current_product_index = 0
-           st.rerun()
+            }
+            st.session_state.n_products = num_pps
+            st.session_state.responses = [{} for _ in range(num_pps)]
+            st.session_state.step = 1
+            st.session_state.current_product_index = 0
+            st.rerun()
 # SECTION II - Product intro
 def render_section_2_intro():
     idx = st.session_state.current_product_index
