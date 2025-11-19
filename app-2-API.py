@@ -2275,10 +2275,7 @@ def render_summary():
         st.success("✅ Respostas submetidas com sucesso!")
         st.balloons()
         
-        # Show company ID
-        if 'company_id' in st.session_state:
-            st.info(f"🆔 **ID da submissão:** {st.session_state.company_id}")
-            st.write("Por favor, guarde este ID para referência futura.")
+        
         
         st.write("---")
         
