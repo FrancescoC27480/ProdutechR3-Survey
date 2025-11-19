@@ -2191,6 +2191,12 @@ def render_tech_details():
 def render_summary():
     st.title("Resumo e Submissão")
     st.header("Obrigado pela sua participação!")
+    
+    # Initialize submission state (only runs once)
+    if 'submission_status' not in st.session_state:
+        st.session_state.submission_status = 'ready'  # States: ready, submitting, success, error
+    
+    # Display company information
     st.subheader("Informações da Empresa")
     company = st.session_state.company
     col1, col2 = st.columns(2)
@@ -2198,14 +2204,15 @@ def render_summary():
         st.write(f"**Número de Trabalhadores:** {company['num_trabalhadores']}")
         st.write(f"**Região:** {company['regiao']}")
     with col2:
-        # FIX: Handle both list and string for tipo_organizacao
+        # Handle both list and string for tipo_organizacao
         tipo_org = company['tipo_organizacao'] if isinstance(company['tipo_organizacao'], str) else ', '.join(company['tipo_organizacao'])
         st.write(f"**Tipo de Organização:** {tipo_org}")
         st.write(f"**Número de PPS:** {company['num_pps']}")
+    
+    # Display products summary
     st.subheader("Resumo dos Produtos")
     products_summary = []
     for i, resp in enumerate(st.session_state.responses):
-        # Get PPS info to show number and designation
         pps_info = resp.get('pps_info', {})
         pps_num = pps_info.get('pps_num', 'N/A')
         pps_name = pps_info.get('designation', 'N/A')
@@ -2219,15 +2226,112 @@ def render_summary():
             'Tecnologias Ambientais': tech_amb_str
         })
     st.table(pd.DataFrame(products_summary))
-    if st.button("Submeter Respostas", key="submit_final"):
-        # Save data in improved format (two files)
-        main_file, detail_file, company_id = save_survey_data_improved(
-            company=st.session_state.company,
-            responses=st.session_state.responses,
-            pps_data=PPS_DATA
-        )
+    
+    st.write("---")
+    
+    # Important message for users
+    # Important message for users
+    st.info("""
+    **Importante:** 
+
+    - Após clicar em "Submeter Respostas", aguarde alguns segundos. 
+    **Não clique múltiplas vezes** nem feche a página.
+
+    - Se aparecer algum erro temporário, **não desista!** Clique em "Tentar Novamente" 
+      e a submissão irá funcionar. O sistema guarda a sua informação de forma segura.
+      """)
+    
+    # STATE 1: Ready to submit (show submit button)
+    if st.session_state.submission_status == 'ready':
+        if st.button("Submeter Respostas", key="submit_final", type="primary"):
+            # Change state to submitting
+            st.session_state.submission_status = 'submitting'
+            st.rerun()
+    
+    # STATE 2: Currently submitting (show loading spinner)
+    elif st.session_state.submission_status == 'submitting':
+        with st.spinner('📤 A submeter as suas respostas... Por favor aguarde e não feche esta página.'):
+            try:
+                # Save data
+                main_file, detail_file, company_id = save_survey_data_improved(
+                    company=st.session_state.company,
+                    responses=st.session_state.responses,
+                    pps_data=PPS_DATA
+                )
+                
+                # Success! Change state
+                st.session_state.submission_status = 'success'
+                st.session_state.company_id = company_id
+                st.rerun()
+                
+            except Exception as e:
+                # Error occurred, change state
+                st.session_state.submission_status = 'error'
+                st.session_state.submission_error = str(e)
+                st.rerun()
+    
+    # STATE 3: Successfully submitted (show success message)
+    elif st.session_state.submission_status == 'success':
         st.success("✅ Respostas submetidas com sucesso!")
-        # Provide download buttons for both files
+        st.balloons()
+        
+        # Show company ID
+        if 'company_id' in st.session_state:
+            st.info(f"🆔 **ID da submissão:** {st.session_state.company_id}")
+            st.write("Por favor, guarde este ID para referência futura.")
+        
+        st.write("---")
+        
+        # Option to submit another response
+        if st.button("🔄 Submeter Nova Resposta", key="new_submission"):
+            # Reset everything for a new submission
+            st.session_state.submission_status = 'ready'
+            st.session_state.step = 0
+            st.session_state.company = {}
+            st.session_state.responses = []
+            st.session_state.selected_pps = []
+            st.session_state.current_product_index = 0
+            st.session_state.n_products = 0
+            if 'company_id' in st.session_state:
+                del st.session_state.company_id
+            if 'submission_error' in st.session_state:
+                del st.session_state.submission_error
+            st.rerun()
+    
+    # STATE 4: Error occurred (show error message and retry option)
+    elif st.session_state.submission_status == 'error':
+        st.error("❌ Ocorreu um erro ao submeter as respostas.")
+        
+        # Show the specific error if available
+        if 'submission_error' in st.session_state:
+            with st.expander("Detalhes do erro"):
+                st.code(st.session_state.submission_error)
+        
+        st.warning("Por favor, tente novamente. Se o erro persistir, aguarde 1-2 minutos antes de tentar novamente.")
+        
+        col1, col2 = st.columns(2)
+        
+        with col1:
+            if st.button("🔄 Tentar Novamente", key="retry_submission", type="primary"):
+                # Go back to submitting state
+                st.session_state.submission_status = 'submitting'
+                st.rerun()
+        
+        with col2:
+            if st.button("⬅️ Voltar ao Início", key="restart_survey"):
+                # Reset everything
+                st.session_state.submission_status = 'ready'
+                st.session_state.step = 0
+                st.session_state.company = {}
+                st.session_state.responses = []
+                st.session_state.selected_pps = []
+                st.session_state.current_product_index = 0
+                st.session_state.n_products = 0
+                if 'company_id' in st.session_state:
+                    del st.session_state.company_id
+                if 'submission_error' in st.session_state:
+                    del st.session_state.submission_error
+                st.rerun()
  
 # Main app
 def main():
