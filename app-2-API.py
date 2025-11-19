@@ -12,6 +12,8 @@ import json
 
 from datetime import datetime
 import os
+import time
+from random import uniform
 
 # Add this right after your imports, replacing any other CSS
 st.markdown("""
@@ -106,19 +108,128 @@ def get_detail_worksheet():
     return sh.sheet1
 
 
-def save_main_rows_to_sheet(main_rows):
+def save_main_rows_to_sheet(main_rows, max_retries=3):
+    """
+    Save rows to main Google Sheet with retry logic and batch operation.
+    
+    Args:
+        main_rows: List of row dictionaries to save
+        max_retries: Maximum number of retry attempts (default: 3)
+    
+    Improvements:
+    - Uses batch operation (append_rows) instead of individual appends
+    - Reduces API calls from N (one per row) to just 1 call
+    - Still includes retry logic for rate limiting
+    """
     ws = get_main_worksheet()
+    
+    # STEP 1: Prepare all rows BEFORE making any API calls
+    rows_to_append = []
     for row_dict in main_rows:
         row = [row_dict.get(col, "") for col in MAIN_COLUMNS]
-        ws.append_row(row, value_input_option="USER_ENTERED")
+        rows_to_append.append(row)
+    
+    # If there are no rows to append, exit early
+    if not rows_to_append:
+        return
+    
+    # STEP 2: Send all rows in a SINGLE API call with retry logic
+    for attempt in range(max_retries):
+        try:
+            # Single API call for ALL rows instead of one call per row
+            ws.append_rows(rows_to_append, value_input_option="USER_ENTERED")
+            
+            # Success! Exit the retry loop
+            return
+            
+        except Exception as e:
+            # Convert error to string and make it lowercase for easier checking
+            error_message = str(e).lower()
+            
+            # Check if it's a rate limit error
+            is_rate_limit = any(word in error_message for word in ['rate', 'quota', 'limit', 'exceeded'])
+            
+            if is_rate_limit:
+                if attempt < max_retries - 1:  # Not the last attempt yet
+                    # Calculate wait time with exponential backoff
+                    wait_time = (2 ** attempt) + uniform(0, 1)
+                    
+                    # Show user-friendly message
+                    st.warning(f"⏳ Google Sheets está ocupado. A tentar novamente em {wait_time:.1f} segundos... (tentativa {attempt + 2}/{max_retries})")
+                    
+                    time.sleep(wait_time)
+                    continue  # Try again
+                else:
+                    # We've exhausted all retries
+                    raise Exception(
+                        f"❌ Erro de rate limit após {max_retries} tentativas. "
+                        "Por favor, aguarde 1-2 minutos e tente novamente."
+                    )
+            else:
+                # It's a different kind of error (not rate limit)
+                raise Exception(f"Erro ao guardar dados principais: {str(e)}")
 
 
-def save_detail_rows_to_sheet(detail_rows):
+def save_detail_rows_to_sheet(detail_rows, max_retries=3):
+    """
+    Save rows to detail Google Sheet with retry logic and batch operation.
+    
+    Args:
+        detail_rows: List of row dictionaries to save
+        max_retries: Maximum number of retry attempts (default: 3)
+    
+    Improvements:
+    - Uses batch operation (append_rows) instead of individual appends
+    - Reduces API calls from N (one per row) to just 1 call
+    - Still includes retry logic for rate limiting
+    """
     ws = get_detail_worksheet()
+    
+    # STEP 1: Prepare all rows BEFORE making any API calls
+    rows_to_append = []
     for row_dict in detail_rows:
         row = [row_dict.get(col, "") for col in DETAIL_COLUMNS]
-        ws.append_row(row, value_input_option="USER_ENTERED")
-
+        rows_to_append.append(row)
+    
+    # If there are no rows to append, exit early
+    if not rows_to_append:
+        return
+    
+    # STEP 2: Send all rows in a SINGLE API call with retry logic
+    for attempt in range(max_retries):
+        try:
+            # Single API call for ALL rows instead of one call per row
+            ws.append_rows(rows_to_append, value_input_option="USER_ENTERED")
+            
+            # Success! Exit the retry loop
+            return
+            
+        except Exception as e:
+            # Convert error to string and make it lowercase for easier checking
+            error_message = str(e).lower()
+            
+            # Check if it's a rate limit error
+            is_rate_limit = any(word in error_message for word in ['rate', 'quota', 'limit', 'exceeded'])
+            
+            if is_rate_limit:
+                if attempt < max_retries - 1:  # Not the last attempt yet
+                    # Calculate wait time with exponential backoff
+                    wait_time = (2 ** attempt) + uniform(0, 1)
+                    
+                    # Show user-friendly message
+                    st.warning(f"⏳ Google Sheets está ocupado. A tentar novamente em {wait_time:.1f} segundos... (tentativa {attempt + 2}/{max_retries})")
+                    
+                    time.sleep(wait_time)
+                    continue  # Try again
+                else:
+                    # We've exhausted all retries
+                    raise Exception(
+                        f"❌ Erro de rate limit após {max_retries} tentativas. "
+                        "Por favor, aguarde 1-2 minutos e tente novamente."
+                    )
+            else:
+                # It's a different kind of error (not rate limit)
+                raise Exception(f"Erro ao guardar detalhes: {str(e)}")
 
 st.set_page_config(page_title="Introduçao", layout="wide")
 
