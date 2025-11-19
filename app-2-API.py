@@ -741,28 +741,59 @@ Depois de **confirmar e adicionar um PPS à lista**, as barras de seleção mant
                         else:
                           st.warning("⚠️ Este PPS já foi adicionado à lista.")
     
+
+    # Temporary debugging (remove after testing)
+    with st.expander("🔍 Debug Info (temporary)", expanded=False):
+        st.write(f"Number of PPS selected: {len(st.session_state.selected_pps)}")
+        st.write(f"Selected PPS: {st.session_state.selected_pps}")
+        st.write(f"tipo_org filled: {bool(tipo_org)}")
+        st.write(f"regiao filled: {bool(regiao)}")
+        st.write(f"num_trab filled: {bool(num_trab) if num_trab else 'N/A for OIT'}")
+    
+    
+    
+    
+    
     # Navigation button
     st.write("---")
-    
-    if len(st.session_state.selected_pps) == 0:
+
+    # More explicit validation
+    num_pps = len(st.session_state.selected_pps)
+
+    if num_pps == 0:
         st.warning("⚠️ Por favor, adicione pelo menos um PPS antes de continuar.")
-    
-    if st.button("Próximo ➡️", key="next_sec1", disabled=(len(st.session_state.selected_pps) == 0)):
-        if tipo_org and regiao:  # num_trab is now optional
-            st.session_state.company = {
-                "num_trabalhadores": num_trab,
-                "tipo_organizacao": tipo_org,
-                "regiao": regiao,
-                "selected_pps": st.session_state.selected_pps,
-                "num_pps": len(st.session_state.selected_pps)
-            }
-            st.session_state.n_products = len(st.session_state.selected_pps)
-            st.session_state.responses = [{} for _ in range(len(st.session_state.selected_pps))]
-            st.session_state.step = 1
-            st.session_state.current_product_index = 0
-            st.rerun()
-        else:
-            st.error("❌ Por favor, preencha todos os campos obrigatórios.")
+    elif num_pps == 1:
+        st.info(f"✓ {num_pps} PPS selecionado. Pode prosseguir quando estiver pronto.")
+    else:
+        st.success(f"✓ {num_pps} PPS selecionados. Pode prosseguir quando estiver pronto.")
+
+    # Check ALL required fields before enabling button
+    can_proceed = (
+        num_pps > 0 and 
+        tipo_org and 
+        regiao and
+        (num_trab or "Organização de Investigação e Tecnologia (OIT), Associação ou Universidade" in tipo_org)
+    )
+
+   if st.button("Próximo ➡️", key="next_sec1", disabled=(not can_proceed), type="primary"):
+    # Additional validation before proceeding
+      if not tipo_org or not regiao:
+          st.error("❌ Por favor, preencha todos os campos obrigatórios.")
+      elif num_pps == 0:
+          st.error("❌ Por favor, adicione pelo menos um PPS.")
+      else:
+          st.session_state.company = {
+            "num_trabalhadores": num_trab,
+            "tipo_organizacao": tipo_org,
+            "regiao": regiao,
+            "selected_pps": st.session_state.selected_pps,
+            "num_pps": num_pps
+          }
+          st.session_state.n_products = num_pps
+          st.session_state.responses = [{} for _ in range(num_pps)]
+          st.session_state.step = 1
+          st.session_state.current_product_index = 0
+          st.rerun()
 # SECTION II - Product intro
 def render_section_2_intro():
     idx = st.session_state.current_product_index
