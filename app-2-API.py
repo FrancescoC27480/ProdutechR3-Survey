@@ -853,18 +853,6 @@ Depois de **confirmar e adicionar um PPS à lista**, as barras de seleção mant
                           st.warning("⚠️ Este PPS já foi adicionado à lista.")
     
 
-    # Temporary debugging (remove after testing)
-    with st.expander("🔍 Debug Info (temporary)", expanded=False):
-        st.write(f"Number of PPS selected: {len(st.session_state.selected_pps)}")
-        st.write(f"Selected PPS: {st.session_state.selected_pps}")
-        st.write(f"tipo_org filled: {bool(tipo_org)}")
-        st.write(f"regiao filled: {bool(regiao)}")
-        st.write(f"num_trab filled: {bool(num_trab) if num_trab else 'N/A for OIT'}")
-    
-    
-    
-    
-    
     # Navigation button
     st.write("---")
 
