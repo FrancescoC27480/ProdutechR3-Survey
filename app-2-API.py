@@ -894,6 +894,15 @@ Depois de **confirmar e adicionar um PPS à lista**, as barras de seleção mant
             st.rerun()
 # SECTION II - Product intro
 def render_section_2_intro():
+    # Scroll to top when section loads
+    st.markdown(
+        """
+        <script>
+            window.parent.document.querySelector('section.main').scrollTo(0, 0);
+        </script>
+        """,
+        unsafe_allow_html=True
+    )
     idx = st.session_state.current_product_index
     n = st.session_state.n_products
     
